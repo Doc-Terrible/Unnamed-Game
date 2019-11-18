@@ -7,8 +7,8 @@ using namespace std;
 const double FPS = 60;
 const int SCREEN_W = 1000;
 const int SCREEN_H = 700;
-const int playerw = 8;
-const int playerh = 15;
+const int playerw = 10;
+const int playerh = 23;
 enum KEYS { JUMP, LEFT, RIGHT };
 
 int main() {
@@ -52,10 +52,17 @@ int main() {
 		if (ev.type == ALLEGRO_EVENT_TIMER) {
 			y += sanicY * time;
 			x += sanicX * time;
-			if (keys[RIGHT] && grounded && !dashing) sanicX = movespeed;//move right
-			if (keys[LEFT] && grounded && !dashing) sanicX = -movespeed;//move left
-			if (!keys[LEFT] && !keys[RIGHT] && grounded) sanicX = 0;
+			if (keys[RIGHT] && grounded && !dashing && !slowtime) sanicX = movespeed;//move right
+			if (keys[LEFT] && grounded && !dashing && !slowtime) sanicX = -movespeed;//move left
+			if (!keys[LEFT] && !keys[RIGHT] && grounded && sanicX != 0) {
+				if (sanicX > 0)sanicX += -sanicX / 2;
+				else if (sanicX < 0)sanicX += -sanicX / 2;
+			}
 			if (sanicY < 20 && !dashing)sanicY += gravity * time;//terminal velocity & downward movement
+			if (sanicX != 0) {
+				if (sanicX > 0) sanicX += -.01;
+				else if (sanicX < 0) sanicX += .01;
+			}
 			if (slowtime) {
 				if (keys[RIGHT]) angle += -.1;
 				if (keys[LEFT]) angle += .1;
@@ -64,8 +71,8 @@ int main() {
 			DashMarkerY = 50 * cos(angle) + y;
 			
 			/* jump */
-			if (keys[JUMP] && canjump) {
-				sanicY = -(movespeed * 2);
+			if (keys[JUMP] && canjump && grounded) {
+				sanicY = -(movespeed * 2.5);
 				canjump = false;
 				y -= 8;
 			}
@@ -103,6 +110,9 @@ int main() {
 			case ALLEGRO_KEY_LSHIFT:
 				if (candash) slowtime = true;
 				break;
+			case ALLEGRO_KEY_RSHIFT:
+				if (candash) dashing = true;
+				break;
 			}
 		}
 		/* stoping movement when key is relessed */
@@ -127,36 +137,30 @@ int main() {
 			}
 		}
 		/* collision */
-		if (y >= 675) {
-			sanicY = 0;
-			canjump = true;
-			candash = true;
-			if (y > 675)sanicY += -1;
-			else if (y == 675)sanicY += -gravity;
-			grounded = true;
-		}
-		else grounded = false;
-
-		if (x + playerw < 500 ||
-			y + playerh < 400) {
-
-		}
+		grounded = false;
+		if (x + playerw < 500 || y + playerh < 400) {}
 		else {
 			if (x + playerw > 500 && y > 400) {
 				x = 500 - playerw;
-				if (sanicX > 0)
-					sanicX = 0;
+				if (sanicX > 0)sanicX = 0;
 			}
-			if (y + playerh > 400 && x + playerw > 500) {
+			if (y + playerh > 400 && x > 500) {
 				y = 400 - playerh;
 				grounded = true;
 				candash = true;
 				canjump = true;
-				if (sanicY > 0) {
-					sanicY = 0;
-				}
+				if (sanicY > 0)sanicY = 0;
 			}
-			else grounded = false;
+		}
+		if (y + playerh < 690) {}
+		else {
+			if (y + playerh > 690) {
+				y = 690 - playerh;
+				grounded = true;
+				candash = true;
+				canjump = true;
+				if (sanicY > 0)sanicY = 0;
+			}
 		}
 		/* draw section */
 		if (redraw && al_event_queue_is_empty(event_queue)) {
