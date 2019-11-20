@@ -4,9 +4,10 @@
 #include <allegro5/keyboard.h>
 #include "Globals.h"
 #include "Platform.h"
+#include <vector>
 using namespace std;
 
-enum KEYS { JUMP, LEFT, RIGHT };
+enum KEYS { KEY_JUMP, KEY_LEFT, KEY_RIGHT };
 
 int main() {
 	al_init();
@@ -41,6 +42,13 @@ int main() {
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
 
+	vector<Platform*> ground;
+	vector<Platform*>::iterator iter;
+	for (int i = 0; i < 41; i++) {
+		Platform* newplatform = new Platform((PLATFORMr * 2) * i, SCREEN_H - 16, unbreakable);
+		ground.push_back(newplatform);
+	}
+
 	while (!quit) {
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
@@ -49,9 +57,9 @@ int main() {
 		if (ev.type == ALLEGRO_EVENT_TIMER) {
 			y += sanicY * time;
 			x += sanicX * time;
-			if (keys[RIGHT] && grounded && !dashing && !slowtime) sanicX = movespeed;//move right
-			if (keys[LEFT] && grounded && !dashing && !slowtime) sanicX = -movespeed;//move left
-			if (!keys[LEFT] && !keys[RIGHT] && grounded && sanicX != 0) {
+			if (keys[KEY_RIGHT] && grounded && !dashing && !slowtime) sanicX = movespeed;//move right
+			if (keys[KEY_LEFT] && grounded && !dashing && !slowtime) sanicX = -movespeed;//move left
+			if (!keys[KEY_LEFT] && !keys[KEY_RIGHT] && grounded && sanicX != 0) {
 				if (sanicX > 0)sanicX += -sanicX / 4;
 				else if (sanicX < 0)sanicX += -sanicX / 4;
 			}
@@ -61,14 +69,14 @@ int main() {
 				else if (sanicX < 0) sanicX += .01;
 			}
 			if (slowtime) {
-				if (keys[RIGHT]) angle += -.1;
-				if (keys[LEFT]) angle += .1;
+				if (keys[KEY_RIGHT]) angle += -.1;
+				if (keys[KEY_LEFT]) angle += .1;
 			}
 			DashMarkerX = 50 * sin(angle) + x;
 			DashMarkerY = 50 * cos(angle) + y;
 			
 			/* jump */
-			if (keys[JUMP] && canjump && grounded) {
+			if (keys[KEY_JUMP] && canjump && grounded) {
 				sanicY = -(movespeed * 2.5);
 				canjump = false;
 				y -= 8;
@@ -96,13 +104,13 @@ int main() {
 		if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_SPACE:
-				keys[JUMP] = true;
+				keys[KEY_JUMP] = true;
 				break;
 			case ALLEGRO_KEY_A:
-				keys[LEFT] = true;
+				keys[KEY_LEFT] = true;
 				break;
 			case ALLEGRO_KEY_D:
-				keys[RIGHT] = true;
+				keys[KEY_RIGHT] = true;
 				break;
 			case ALLEGRO_KEY_LSHIFT:
 				if (candash) slowtime = true;
@@ -116,13 +124,13 @@ int main() {
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_SPACE:
-				keys[JUMP] = false;
+				keys[KEY_JUMP] = false;
 				break;
 			case ALLEGRO_KEY_A:
-				keys[LEFT] = false;
+				keys[KEY_LEFT] = false;
 				break;
 			case ALLEGRO_KEY_D:
-				keys[RIGHT] = false;
+				keys[KEY_RIGHT] = false;
 				break;
 			case ALLEGRO_KEY_LSHIFT:
 				if (candash) dashing = true;
@@ -135,7 +143,32 @@ int main() {
 		}
 		/* collision */
 		grounded = false;
-		if (x + playerw < 500 || y + playerh < 400) {}
+		for (iter = ground.begin(); iter != ground.end(); iter++) {
+			switch ((*iter)->collision(x, y, false)) {
+			case NONE:
+				break;
+			case LEFT:
+				x += (*iter)->collision(x, y, true);
+				if (sanicX < 0)sanicX = 0;
+				break;
+			case RIGHT:
+				x -= (*iter)->collision(x, y, true);
+				if (sanicX > 0)sanicX = 0;
+				break;
+			case TOP:
+				y -= (*iter)->collision(x, y, true);
+				if (sanicY < 0)sanicY = 0;
+				grounded = true;
+				candash = true;
+				canjump = true;
+				break;
+			case BOTTEM:
+				y += (*iter)->collision(x, y, true);
+				if (sanicY > 0)sanicY = 0;
+				break;
+			}
+		}
+		/*if (x + playerw < 500 || y + playerh < 400) {}
 		else {
 			if (x + playerw > 500 && y > 400) {
 				x = 500 - playerw;
@@ -160,13 +193,17 @@ int main() {
 			}
 		}
 		/* draw section */
+
 		if (redraw && al_event_queue_is_empty(event_queue)) {
 			redraw = false;
 			al_clear_to_color(al_map_rgb(0, 0, 0));
+			for (iter = ground.begin(); iter != ground.end(); iter++) {
+				(*iter)->draw();
+			}
+			//al_draw_filled_rectangle(0, 690, SCREEN_W, SCREEN_H, al_map_rgb(0, 127, 0));
+			//al_draw_filled_rectangle(500, 400, SCREEN_W, SCREEN_H, al_map_rgb(0, 127, 0));
 			if (slowtime)al_draw_circle(DashMarkerX, DashMarkerY, 5, al_map_rgb(255, 0, 0), 2);
 			al_draw_filled_rectangle(x + playerw, y + playerh, x - playerw, y - playerh, al_map_rgb(255, 0, 0));
-			al_draw_filled_rectangle(0, 690, SCREEN_W, SCREEN_H, al_map_rgb(0, 127, 0));
-			al_draw_filled_rectangle(500, 400, SCREEN_W, SCREEN_H, al_map_rgb(0, 127, 0));
 			al_flip_display();
 		}
 	}
