@@ -44,7 +44,7 @@ int main() {
 
 	vector<Platform*> ground;
 	vector<Platform*>::iterator iter;
-	for (int i = 0; i < 41; i++) {
+	for (int i = 0; i < 40; i++) {
 		Platform* newplatform = new Platform((PLATFORMr * 2) * i, SCREEN_H - 16, unbreakable);
 		ground.push_back(newplatform);
 	}
