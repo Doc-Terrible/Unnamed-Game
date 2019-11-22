@@ -1,10 +1,5 @@
-#include <iostream>
-#include <allegro5/allegro_primitives.h>
-#include <allegro5/allegro.h>
-#include <allegro5/keyboard.h>
 #include "Globals.h"
 #include "Platform.h"
-#include <vector>
 using namespace std;
 
 enum KEYS { KEY_JUMP, KEY_LEFT, KEY_RIGHT };
@@ -63,7 +58,7 @@ int main() {
 				if (sanicX > 0)sanicX += -sanicX / 4;
 				else if (sanicX < 0)sanicX += -sanicX / 4;
 			}
-			if (sanicY < 20 && !dashing)sanicY += gravity * time;//terminal velocity & downward movement
+			if (!dashing)sanicY += gravity * time;//aply gravity
 			if (sanicX != 0) {
 				if (sanicX > 0) sanicX += -.01;
 				else if (sanicX < 0) sanicX += .01;
@@ -72,6 +67,12 @@ int main() {
 				if (keys[KEY_RIGHT]) angle += -.1;
 				if (keys[KEY_LEFT]) angle += .1;
 			}
+			/* terminal velocities */
+			if (sanicY > 20)sanicY = 20;
+			else if (sanicY < -20)sanicY = -20;
+			if (sanicX > 20)sanicX = 20;
+			else if (sanicX < -20)sanicX = -20;
+			/* dash marker positioning */
 			DashMarkerX = 50 * sin(angle) + x;
 			DashMarkerY = 50 * cos(angle) + y;
 			
@@ -157,14 +158,14 @@ int main() {
 				break;
 			case TOP:
 				y -= (*iter)->collision(x, y, true);
-				if (sanicY < 0)sanicY = 0;
+				if (sanicY > 0)sanicY = 0;
 				grounded = true;
 				candash = true;
 				canjump = true;
 				break;
 			case BOTTEM:
 				y += (*iter)->collision(x, y, true);
-				if (sanicY > 0)sanicY = 0;
+				if (sanicY < 0)sanicY = 0;
 				break;
 			}
 		}
