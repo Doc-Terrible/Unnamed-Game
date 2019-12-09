@@ -5,29 +5,41 @@ Platform::Platform(int X, int Y, int Breakable){
 	Ypos = Y;
 }
 
-int Platform::collision(double X, double Y, bool Distance){
-	if (Distance)return sqrt(((X - Xpos) * (X - Xpos)) + ((Y - Ypos) * (Y - Ypos)));
-	else if (X + playerw < Xpos + PLATFORMr || X - playerw > Xpos - PLATFORMr || Y + playerh < Ypos + PLATFORMr || Y - playerh > Ypos - PLATFORMr) {
-		return NONE;
+int Platform::collision(double X, double Y, int Distance){
+	switch (Distance) {
+	case LEFT:
+		return Xpos - (PLATFORMr + playerw);
+		break;
+	case RIGHT:
+		return Xpos + (PLATFORMr + playerw);
+		break;
+	case TOP:
+		return Ypos - (PLATFORMr + playerh);
+		break;
+	case BOTTOM:
+		return Ypos + (PLATFORMr + playerh);
+		break;
 	}
-	else {
-		if (X + playerw > Xpos + PLATFORMr && X < Xpos - PLATFORMr && Y > Ypos + PLATFORMr && Y < Ypos - PLATFORMr) {
-			std::cout << "left collision" << std::endl;
-			return LEFT;
-		}
-		if (X > Xpos + PLATFORMr && X - playerw < Xpos - PLATFORMr && Y > Ypos + PLATFORMr && Y < Ypos - PLATFORMr) {
-			std::cout << "right collision" << std::endl;
-			return RIGHT;
-		}
-		if (X > Xpos + PLATFORMr && X < Xpos - PLATFORMr && Y + playerh > Ypos + PLATFORMr && Y < Ypos - PLATFORMr) {
-			std::cout << "top collision" << std::endl;
+	if (X + playerw > Xpos - PLATFORMr && X - playerw < Xpos + PLATFORMr && Y + playerh > Ypos - PLATFORMr && Y - playerh < Ypos + PLATFORMr) {
+		if (X + playerw > Xpos && X - playerw < Xpos && Y + playerh > Ypos - PLATFORMr && Y < Ypos) {
+			printf("top ");
 			return TOP;
 		}
-		if (X > Xpos + PLATFORMr && X < Xpos - PLATFORMr && Y > Ypos + PLATFORMr && Y + playerh < Ypos - PLATFORMr) {
-			std::cout << "bottem collision" << std::endl;
-			return BOTTEM;
+		if (X + playerw > Xpos - PLATFORMr && X < Xpos && Y + playerh > Ypos && Y - playerh < Ypos) {
+			printf("left ");
+			return LEFT;
 		}
+		if (X + playerw > Xpos && X - playerw < Xpos && Y > Ypos && Y - playerh < Ypos + PLATFORMr) {
+			printf("bottom ");
+			return BOTTOM;
+		}
+		if (X > Xpos && X - playerw < Xpos +PLATFORMr && Y + playerh > Ypos && Y - playerh < Ypos) {
+			printf("right ");
+			return RIGHT;
+		}
+		return NULL;
 	}
+	else return NONE;
 }
 
 void Platform::move(){

@@ -1,8 +1,33 @@
-#include "Globals.h"
 #include "Platform.h"
 using namespace std;
 
 enum KEYS { KEY_JUMP, KEY_LEFT, KEY_RIGHT };
+
+int Grid[23][40]{
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+};
 
 int main() {
 	al_init();
@@ -14,7 +39,7 @@ int main() {
 	ALLEGRO_TIMER* timer = al_create_timer(1.0 / FPS);
 	al_start_timer(timer);
 	double x = 350; //player x position
-	double y = 350; //player y position
+	double y = 330; //player y position
 	double DashMarkerX = 0; //x position of marker thet shows where you will move
 	double DashMarkerY = 0; //y position of marker thet shows where you will move
 	double angle = 0;
@@ -39,9 +64,13 @@ int main() {
 
 	vector<Platform*> ground;
 	vector<Platform*>::iterator iter;
-	for (int i = 0; i < 40; i++) {
-		Platform* newplatform = new Platform((PLATFORMr * 2) * i, SCREEN_H - 16, unbreakable);
-		ground.push_back(newplatform);
+	for (int i = 0; i < 23; i++) {
+		for (int j = 0; j < 40; j++) {
+			if (Grid[i][j] == 1) {
+				Platform* newplatform = new Platform((j * 32) + PLATFORMr, (i * 32) + PLATFORMr, unbreakable);
+				ground.push_back(newplatform);
+			}
+		}
 	}
 
 	while (!quit) {
@@ -145,64 +174,40 @@ int main() {
 		/* collision */
 		grounded = false;
 		for (iter = ground.begin(); iter != ground.end(); iter++) {
-			switch ((*iter)->collision(x, y, false)) {
+			switch ((*iter)->collision(x, y, NONE)) {
 			case NONE:
 				break;
 			case LEFT:
-				x += (*iter)->collision(x, y, true);
+				x = (*iter)->collision(x, y, LEFT);
 				if (sanicX < 0)sanicX = 0;
+				dashing = false;
 				break;
 			case RIGHT:
-				x -= (*iter)->collision(x, y, true);
+				x = (*iter)->collision(x, y, RIGHT);
 				if (sanicX > 0)sanicX = 0;
+				dashing = false;
 				break;
 			case TOP:
-				y -= (*iter)->collision(x, y, true);
+				y = (*iter)->collision(x, y, TOP);
 				if (sanicY > 0)sanicY = 0;
+				dashing = false;
 				grounded = true;
 				candash = true;
 				canjump = true;
 				break;
-			case BOTTEM:
-				y += (*iter)->collision(x, y, true);
+			case BOTTOM:
+				y = (*iter)->collision(x, y, BOTTOM);
 				if (sanicY < 0)sanicY = 0;
+				dashing = false;
 				break;
 			}
 		}
-		/*if (x + playerw < 500 || y + playerh < 400) {}
-		else {
-			if (x + playerw > 500 && y > 400) {
-				x = 500 - playerw;
-				if (sanicX > 0)sanicX = 0;
-			}
-			if (y + playerh > 400 && x > 500) {
-				y = 400 - playerh;
-				grounded = true;
-				candash = true;
-				canjump = true;
-				if (sanicY > 0)sanicY = 0;
-			}
-		}
-		if (y + playerh < 690) {}
-		else {
-			if (y + playerh > 690) {
-				y = 690 - playerh;
-				grounded = true;
-				candash = true;
-				canjump = true;
-				if (sanicY > 0)sanicY = 0;
-			}
-		}
-		/* draw section */
-
 		if (redraw && al_event_queue_is_empty(event_queue)) {
 			redraw = false;
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			for (iter = ground.begin(); iter != ground.end(); iter++) {
 				(*iter)->draw();
 			}
-			//al_draw_filled_rectangle(0, 690, SCREEN_W, SCREEN_H, al_map_rgb(0, 127, 0));
-			//al_draw_filled_rectangle(500, 400, SCREEN_W, SCREEN_H, al_map_rgb(0, 127, 0));
 			if (slowtime)al_draw_circle(DashMarkerX, DashMarkerY, 5, al_map_rgb(255, 0, 0), 2);
 			al_draw_filled_rectangle(x + playerw, y + playerh, x - playerw, y - playerh, al_map_rgb(255, 0, 0));
 			al_flip_display();

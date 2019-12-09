@@ -10,7 +10,7 @@ private:
 	ALLEGRO_BITMAP* pic;
 public:
 	Platform(int X, int Y, int Breakable);
-	int collision(double X, double Y, bool Distance);
+	int collision(double X, double Y, int Distance);
 	void move();
 	void draw();
 };
