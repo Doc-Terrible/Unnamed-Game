@@ -1,7 +1,7 @@
 #include "Platform.h"
 using namespace std;
 
-enum KEYS { KEY_JUMP, KEY_LEFT, KEY_RIGHT };
+enum KEYS { KEY_LEFT, KEY_RIGHT, KEY_DOWN };
 
 int Grid[23][40]{
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
@@ -9,7 +9,7 @@ int Grid[23][40]{
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
@@ -46,16 +46,18 @@ int main() {
 	double movespeed = 4; //base move speed
 	double sanicX = 0; //left right speed
 	double sanicY = 0; //up down speed
-	double gravity = .5;
-	double time = 1;
+	double gravity = .5; //gravity
+	double time = 1; //for making all movment slow down
 	int dashtimer = 2; //timer for dashing
+	int walltimer = 10; //timer for not sliding down wall
 	bool keys[3] = { false,false,false };
 	bool canjump = false; //if can jump
 	bool jumping = false; //if jumping
 	bool candash = false; //if can dash
 	bool dashing = false; //if dashing left
-	bool slowtime = false; 
+	bool slowtime = false; //if time is slowed
 	bool grounded = false; //if on ground
+	int walled = false; //if on wall
 	bool redraw = true;
 	bool quit = false;
 	al_register_event_source(event_queue, al_get_display_event_source(display));
@@ -77,6 +79,7 @@ int main() {
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 		if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) break;
+
 		/* movement */
 		if (ev.type == ALLEGRO_EVENT_TIMER) {
 			y += sanicY * time;
@@ -87,31 +90,35 @@ int main() {
 				if (sanicX > 0)sanicX += -sanicX / 4;
 				else if (sanicX < 0)sanicX += -sanicX / 4;
 			}
-			if (!dashing)sanicY += gravity * time;//aply gravity
+			if (!dashing && walled == 0)sanicY += gravity * time;//aply gravity
+			else if (walled > 0 && walltimer == 0)sanicY += (gravity / 4) * time;
 			if (sanicX != 0) {
-				if (sanicX > 0) sanicX += -.01;
-				else if (sanicX < 0) sanicX += .01;
+				if (sanicX > 0) sanicX += -.05;
+				else if (sanicX < 0) sanicX += .05;
 			}
 			if (slowtime) {
 				if (keys[KEY_RIGHT]) angle += -.1;
 				if (keys[KEY_LEFT]) angle += .1;
 			}
+
 			/* terminal velocities */
-			if (sanicY > 20)sanicY = 20;
-			else if (sanicY < -20)sanicY = -20;
+			if (sanicY > 20 && !walled)sanicY = 20;
+			else if (sanicY < -20 && !walled)sanicY = -20;
+			else if (sanicY > 10 && walled)sanicY = 10;
+			else if (sanicY < -10 && walled)sanicY = -10;
 			if (sanicX > 20)sanicX = 20;
 			else if (sanicX < -20)sanicX = -20;
+
+			/* wall stick timer */
+			if (walled > 0 && walltimer > 0)walltimer--;
+			else walltimer = 10;
+
 			/* dash marker positioning */
 			DashMarkerX = 50 * sin(angle) + x;
 			DashMarkerY = 50 * cos(angle) + y;
-			
-			/* jump */
-			if (keys[KEY_JUMP] && canjump && grounded) {
-				sanicY = -(movespeed * 2.5);
-				canjump = false;
-				y -= 8;
-			}
+
 			/* dash */
+			if (!grounded) candash = true;
 			if (dashing && candash) {
 				candash = false;
 				if (dashing) {
@@ -125,16 +132,35 @@ int main() {
 				}
 			}
 			else dashing = false;
+
 			/* slow time */
 			if (slowtime && candash)time = .1;
 			else time = 1;
 			redraw = true;
 		}
+
 		/* starting movement when key is pressed */
 		if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_SPACE:
-				keys[KEY_JUMP] = true;
+
+				/* wall jump */
+				if (walled == 1 && !grounded) {
+					sanicY = -(movespeed * 2);
+					sanicX = -(movespeed * 2);
+					x--;
+				}
+				if (walled == 2 && !grounded) {
+					sanicY = -(movespeed * 2);
+					sanicX = (movespeed * 2);
+					x++;
+				}
+
+				/* jump */
+				if (canjump && grounded) {
+					sanicY = -(movespeed * 2.5);
+					canjump = false;
+				}
 				break;
 			case ALLEGRO_KEY_A:
 				keys[KEY_LEFT] = true;
@@ -148,14 +174,15 @@ int main() {
 			case ALLEGRO_KEY_RSHIFT:
 				if (candash) dashing = true;
 				break;
+			case ALLEGRO_KEY_S:
+				if (walled == 1)x--;
+				else if (walled == 2)x++;
 			}
 		}
+
 		/* stoping movement when key is relessed */
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
 			switch (ev.keyboard.keycode) {
-			case ALLEGRO_KEY_SPACE:
-				keys[KEY_JUMP] = false;
-				break;
 			case ALLEGRO_KEY_A:
 				keys[KEY_LEFT] = false;
 				break;
@@ -171,28 +198,34 @@ int main() {
 				break;
 			}
 		}
+
 		/* collision */
 		grounded = false;
+		walled = 0;
 		for (iter = ground.begin(); iter != ground.end(); iter++) {
 			switch ((*iter)->collision(x, y, NONE)) {
 			case NONE:
 				break;
 			case LEFT:
 				x = (*iter)->collision(x, y, LEFT);
-				if (sanicX < 0)sanicX = 0;
+				if (sanicX > 0)sanicX = 0;
+				if (sanicY < 0)sanicY = 0;
 				dashing = false;
+				walled = 1;
 				break;
 			case RIGHT:
 				x = (*iter)->collision(x, y, RIGHT);
-				if (sanicX > 0)sanicX = 0;
+				if (sanicX < 0)sanicX = 0;
+				if (sanicY < 0)sanicY = 0;
 				dashing = false;
+				walled = 2;
 				break;
 			case TOP:
 				y = (*iter)->collision(x, y, TOP);
 				if (sanicY > 0)sanicY = 0;
 				dashing = false;
 				grounded = true;
-				candash = true;
+				candash = false;
 				canjump = true;
 				break;
 			case BOTTOM:
@@ -202,6 +235,8 @@ int main() {
 				break;
 			}
 		}
+
+		/* draw section */
 		if (redraw && al_event_queue_is_empty(event_queue)) {
 			redraw = false;
 			al_clear_to_color(al_map_rgb(0, 0, 0));

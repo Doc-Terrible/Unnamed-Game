@@ -8,33 +8,29 @@ Platform::Platform(int X, int Y, int Breakable){
 int Platform::collision(double X, double Y, int Distance){
 	switch (Distance) {
 	case LEFT:
-		return Xpos - (PLATFORMr + playerw);
+		return Xpos - (PLATFORMr + playerw - 1);
 		break;
 	case RIGHT:
-		return Xpos + (PLATFORMr + playerw);
+		return Xpos + (PLATFORMr + playerw - 1);
 		break;
 	case TOP:
-		return Ypos - (PLATFORMr + playerh);
+		return Ypos - (PLATFORMr + playerh - 1);
 		break;
 	case BOTTOM:
-		return Ypos + (PLATFORMr + playerh);
+		return Ypos + (PLATFORMr + playerh - 1);
 		break;
 	}
 	if (X + playerw > Xpos - PLATFORMr && X - playerw < Xpos + PLATFORMr && Y + playerh > Ypos - PLATFORMr && Y - playerh < Ypos + PLATFORMr) {
-		if (X + playerw > Xpos && X - playerw < Xpos && Y + playerh > Ypos - PLATFORMr && Y < Ypos) {
-			printf("top ");
+		if (X > Xpos - PLATFORMr && X < Xpos + PLATFORMr && Y + playerh > Ypos - PLATFORMr && Y < Ypos) {
 			return TOP;
 		}
-		if (X + playerw > Xpos - PLATFORMr && X < Xpos && Y + playerh > Ypos && Y - playerh < Ypos) {
-			printf("left ");
+		if (X + playerw > Xpos - PLATFORMr && X < Xpos && Y > Ypos - PLATFORMr && Y < Ypos + PLATFORMr) {
 			return LEFT;
 		}
-		if (X + playerw > Xpos && X - playerw < Xpos && Y > Ypos && Y - playerh < Ypos + PLATFORMr) {
-			printf("bottom ");
+		if (X > Xpos -PLATFORMr && X < Xpos +PLATFORMr && Y > Ypos && Y - playerh < Ypos + PLATFORMr) {
 			return BOTTOM;
 		}
-		if (X > Xpos && X - playerw < Xpos +PLATFORMr && Y + playerh > Ypos && Y - playerh < Ypos) {
-			printf("right ");
+		if (X > Xpos && X - playerw < Xpos +PLATFORMr && Y > Ypos -PLATFORMr && Y < Ypos + PLATFORMr) {
 			return RIGHT;
 		}
 		return NULL;
