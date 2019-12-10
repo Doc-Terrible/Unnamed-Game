@@ -13,5 +13,5 @@ const int SCREEN_H = 736;
 const int playerw = 10;
 const int playerh = 23;
 enum life { unbreakable, breakable, dead };
-enum collision {NONE,LEFT,RIGHT,TOP,BOTTOM};
+enum collision {NONE,LEFT,RIGHT,TOP,BOTTOM,NO_DASH};
 const int PLATFORMr = 16;

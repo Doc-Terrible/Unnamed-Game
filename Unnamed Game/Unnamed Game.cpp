@@ -4,23 +4,23 @@ using namespace std;
 enum KEYS { KEY_LEFT, KEY_RIGHT, KEY_DOWN };
 
 int Grid[23][40]{
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
-	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
@@ -39,11 +39,11 @@ int main() {
 	ALLEGRO_TIMER* timer = al_create_timer(1.0 / FPS);
 	al_start_timer(timer);
 	double x = 350; //player x position
-	double y = 330; //player y position
+	double y = 600; //player y position
 	double DashMarkerX = 0; //x position of marker thet shows where you will move
 	double DashMarkerY = 0; //y position of marker thet shows where you will move
 	double angle = 0;
-	double movespeed = 4; //base move speed
+	double movespeed = 1; //base move speed
 	double sanicX = 0; //left right speed
 	double sanicY = 0; //up down speed
 	double gravity = .5; //gravity
@@ -79,35 +79,48 @@ int main() {
 		ALLEGRO_EVENT ev;
 		al_wait_for_event(event_queue, &ev);
 		if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) break;
+		
+		if (y >= SCREEN_H + playerh || y <= -playerh || x >= SCREEN_W + playerw || x <= -playerw) {
+			y = SCREEN_H / 2;
+			x = SCREEN_W / 2;
+		}
 
 		/* movement */
 		if (ev.type == ALLEGRO_EVENT_TIMER) {
 			y += sanicY * time;
 			x += sanicX * time;
-			if (keys[KEY_RIGHT] && grounded && !dashing && !slowtime) sanicX = movespeed;//move right
-			if (keys[KEY_LEFT] && grounded && !dashing && !slowtime) sanicX = -movespeed;//move left
+			if (keys[KEY_RIGHT] && grounded && !dashing && !slowtime) sanicX += movespeed;//move right
+			if (keys[KEY_LEFT] && grounded && !dashing && !slowtime) sanicX += -movespeed;//move left
+
+			/* */
 			if (!keys[KEY_LEFT] && !keys[KEY_RIGHT] && grounded && sanicX != 0) {
 				if (sanicX > 0)sanicX += -sanicX / 4;
 				else if (sanicX < 0)sanicX += -sanicX / 4;
 			}
-			if (!dashing && walled == 0)sanicY += gravity * time;//aply gravity
-			else if (walled > 0 && walltimer == 0)sanicY += (gravity / 4) * time;
+			if (!dashing && walled == 0)sanicY += gravity * time; //aply gravity
+			else if (walled > 0 && walltimer == 0)sanicY += (gravity / 4) * time; //slide down wall
+
+			/* air resistence */
 			if (sanicX != 0) {
 				if (sanicX > 0) sanicX += -.05;
 				else if (sanicX < 0) sanicX += .05;
 			}
+
+			/* moving dash marker */
 			if (slowtime) {
-				if (keys[KEY_RIGHT]) angle += -.1;
-				if (keys[KEY_LEFT]) angle += .1;
+				if (keys[KEY_RIGHT]) angle += -.07;
+				if (keys[KEY_LEFT]) angle += .07;
 			}
 
 			/* terminal velocities */
-			if (sanicY > 20 && !walled)sanicY = 20;
-			else if (sanicY < -20 && !walled)sanicY = -20;
+			if (sanicY > 20 && !walled)sanicY = 15;
+			else if (sanicY < -20 && !walled)sanicY = -15;
 			else if (sanicY > 10 && walled)sanicY = 10;
 			else if (sanicY < -10 && walled)sanicY = -10;
-			if (sanicX > 20)sanicX = 20;
-			else if (sanicX < -20)sanicX = -20;
+			if (sanicX > 5 && grounded)sanicX = 5;
+			else if (sanicX < -5 && grounded)sanicX = -5;
+			else if (sanicX > 20)sanicX = 15;
+			else if (sanicX < -20)sanicX = -15;
 
 			/* wall stick timer */
 			if (walled > 0 && walltimer > 0)walltimer--;
@@ -118,8 +131,7 @@ int main() {
 			DashMarkerY = 50 * cos(angle) + y;
 
 			/* dash */
-			if (!grounded) candash = true;
-			if (dashing && candash) {
+			if (dashing && candash && !grounded) {
 				candash = false;
 				if (dashing) {
 					sanicX = (x - DashMarkerX) / -3;
@@ -142,25 +154,30 @@ int main() {
 		/* starting movement when key is pressed */
 		if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev.keyboard.keycode) {
-			case ALLEGRO_KEY_SPACE:
+			case ALLEGRO_KEY_W:
 
 				/* wall jump */
-				if (walled == 1 && !grounded) {
-					sanicY = -(movespeed * 2);
-					sanicX = -(movespeed * 2);
-					x--;
-				}
-				if (walled == 2 && !grounded) {
-					sanicY = -(movespeed * 2);
-					sanicX = (movespeed * 2);
-					x++;
+				if (walled > 0) {
+					if (walled == 1 && !grounded) {
+						sanicY = -8;
+						sanicX = -8;
+						x--;
+					}
+					else if (walled == 2 && !grounded) {
+						sanicY = -8;
+						sanicX = 8;
+						x++;
+					}
 				}
 
 				/* jump */
 				if (canjump && grounded) {
-					sanicY = -(movespeed * 2.5);
+					if (walled == 1)x--;
+					else if (walled == 2)x++;
+					sanicY = -10;
 					canjump = false;
 				}
+
 				break;
 			case ALLEGRO_KEY_A:
 				keys[KEY_LEFT] = true;
@@ -168,10 +185,10 @@ int main() {
 			case ALLEGRO_KEY_D:
 				keys[KEY_RIGHT] = true;
 				break;
-			case ALLEGRO_KEY_LSHIFT:
+			case ALLEGRO_KEY_RSHIFT:
 				if (candash) slowtime = true;
 				break;
-			case ALLEGRO_KEY_RSHIFT:
+			case ALLEGRO_KEY_LSHIFT:
 				if (candash) dashing = true;
 				break;
 			case ALLEGRO_KEY_S:
@@ -189,7 +206,7 @@ int main() {
 			case ALLEGRO_KEY_D:
 				keys[KEY_RIGHT] = false;
 				break;
-			case ALLEGRO_KEY_LSHIFT:
+			case ALLEGRO_KEY_RSHIFT:
 				if (candash) dashing = true;
 				slowtime = false;
 				break;
@@ -225,7 +242,7 @@ int main() {
 				if (sanicY > 0)sanicY = 0;
 				dashing = false;
 				grounded = true;
-				candash = false;
+				candash = true;
 				canjump = true;
 				break;
 			case BOTTOM:
@@ -239,7 +256,7 @@ int main() {
 		/* draw section */
 		if (redraw && al_event_queue_is_empty(event_queue)) {
 			redraw = false;
-			al_clear_to_color(al_map_rgb(0, 0, 0));
+			al_clear_to_color(al_map_rgb(0, 15, 0));
 			for (iter = ground.begin(); iter != ground.end(); iter++) {
 				(*iter)->draw();
 			}

@@ -21,16 +21,20 @@ int Platform::collision(double X, double Y, int Distance){
 		break;
 	}
 	if (X + playerw > Xpos - PLATFORMr && X - playerw < Xpos + PLATFORMr && Y + playerh > Ypos - PLATFORMr && Y - playerh < Ypos + PLATFORMr) {
+		//have i hit the top of the platform?
 		if (X > Xpos - PLATFORMr && X < Xpos + PLATFORMr && Y + playerh > Ypos - PLATFORMr && Y < Ypos) {
 			return TOP;
 		}
+		//have I hit left side of platform
 		if (X + playerw > Xpos - PLATFORMr && X < Xpos && Y > Ypos - PLATFORMr && Y < Ypos + PLATFORMr) {
 			return LEFT;
 		}
-		if (X > Xpos -PLATFORMr && X < Xpos +PLATFORMr && Y > Ypos && Y - playerh < Ypos + PLATFORMr) {
+		//have I hit the bottom of my platform
+		if (X > Xpos - PLATFORMr && X < Xpos + PLATFORMr && Y > Ypos && Y - playerh < Ypos + PLATFORMr) {
 			return BOTTOM;
 		}
-		if (X > Xpos && X - playerw < Xpos +PLATFORMr && Y > Ypos -PLATFORMr && Y < Ypos + PLATFORMr) {
+		//have I hit right side of platform
+		if (X > Xpos && X - playerw < Xpos + PLATFORMr && Y > Ypos - PLATFORMr && Y < Ypos + PLATFORMr) {
 			return RIGHT;
 		}
 		return NULL;
