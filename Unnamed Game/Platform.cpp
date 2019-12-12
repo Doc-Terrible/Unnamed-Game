@@ -21,7 +21,7 @@ int Platform::collision(double X, double Y, int Distance){
 		break;
 	}
 	if (X + playerw > Xpos - PLATFORMr && X - playerw < Xpos + PLATFORMr && Y + playerh > Ypos - PLATFORMr && Y - playerh < Ypos + PLATFORMr) {
-		//have i hit the top of the platform?
+		//have I hit the top of the platform?
 		if (X > Xpos - PLATFORMr && X < Xpos + PLATFORMr && Y + playerh > Ypos - PLATFORMr && Y < Ypos) {
 			return TOP;
 		}
@@ -37,7 +37,6 @@ int Platform::collision(double X, double Y, int Distance){
 		if (X > Xpos && X - playerw < Xpos + PLATFORMr && Y > Ypos - PLATFORMr && Y < Ypos + PLATFORMr) {
 			return RIGHT;
 		}
-		return NULL;
 	}
 	else return NONE;
 }

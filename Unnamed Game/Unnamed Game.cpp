@@ -49,7 +49,7 @@ int main() {
 	double gravity = .5; //gravity
 	double time = 1; //for making all movment slow down
 	int dashtimer = 2; //timer for dashing
-	int walltimer = 10; //timer for not sliding down wall
+	double walltimer = 10; //timer for not sliding down wall
 	bool keys[3] = { false,false,false };
 	bool canjump = false; //if can jump
 	bool jumping = false; //if jumping
@@ -80,31 +80,32 @@ int main() {
 		al_wait_for_event(event_queue, &ev);
 		if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) break;
 		
-		if (y >= SCREEN_H + playerh || y <= -playerh || x >= SCREEN_W + playerw || x <= -playerw) {
-			y = SCREEN_H / 2;
-			x = SCREEN_W / 2;
+		if (y >= SCREEN_H + playerh || y <= -playerh || x >= SCREEN_W + playerw || x <= -playerw) { //if player is off screen
+			y = SCREEN_H / 2; //set player y to center of screen
+			x = SCREEN_W / 2; //set player x to center of screen
 		}
 
 		/* movement */
 		if (ev.type == ALLEGRO_EVENT_TIMER) {
-			y += sanicY * time;
-			x += sanicX * time;
+			y += sanicY * time; //slows down player x velosity when time is slowed
+			x += sanicX * time; //slows down player y velosity when time is slowed
 			if (keys[KEY_RIGHT] && grounded && !dashing && !slowtime) sanicX += movespeed;//move right
 			if (keys[KEY_LEFT] && grounded && !dashing && !slowtime) sanicX += -movespeed;//move left
 
-			/* */
+			/* alpy friction when player is on ground & isn't trying to move */
 			if (!keys[KEY_LEFT] && !keys[KEY_RIGHT] && grounded && sanicX != 0) {
-				if (sanicX > 0)sanicX += -sanicX / 4;
-				else if (sanicX < 0)sanicX += -sanicX / 4;
+				if (sanicX != 0)sanicX += -sanicX / 4 * time;
 			}
-			if (!dashing && walled == 0)sanicY += gravity * time; //aply gravity
-			else if (walled > 0 && walltimer == 0)sanicY += (gravity / 4) * time; //slide down wall
 
 			/* air resistence */
 			if (sanicX != 0) {
-				if (sanicX > 0) sanicX += -.05;
-				else if (sanicX < 0) sanicX += .05;
+				if (sanicX > 0) sanicX += -.05 * time;
+				else if (sanicX < 0) sanicX += .05 * time;
 			}
+
+			/* ably gravity */
+			if (!dashing && walled == 0)sanicY += gravity * time; //normal gravity
+			else if (walled > 0 && walltimer == 0)sanicY += (gravity / 4) * time; //all wall gravity
 
 			/* moving dash marker */
 			if (slowtime) {
@@ -113,18 +114,22 @@ int main() {
 			}
 
 			/* terminal velocities */
-			if (sanicY > 20 && !walled)sanicY = 15;
-			else if (sanicY < -20 && !walled)sanicY = -15;
-			else if (sanicY > 10 && walled)sanicY = 10;
-			else if (sanicY < -10 && walled)sanicY = -10;
-			if (sanicX > 5 && grounded)sanicX = 5;
-			else if (sanicX < -5 && grounded)sanicX = -5;
-			else if (sanicX > 20)sanicX = 15;
-			else if (sanicX < -20)sanicX = -15;
+			if (sanicY != 0) {
+				if (sanicY > 20 && !walled)sanicY = 15; //normal down terminal velocitie
+				else if (sanicY < -20 && !walled)sanicY = -15; //normal up terminal velocitie
+				else if (sanicY > 10 && walled)sanicY = 7; //on wall down terminal velocitie
+				else if (sanicY < -10 && walled)sanicY = -7; //on wall up terminal velocitie
+			}
+			if (sanicX != 0) {
+				if (sanicX > 5 && grounded)sanicX = 5; //on ground left terminal velocitie
+				else if (sanicX < -5 && grounded)sanicX = -5; //on ground right terminal velocitie
+				else if (sanicX > 20)sanicX = 15; //in air left terminal velocitie
+				else if (sanicX < -20)sanicX = -15; //in air right terminal velocitie
+			}
 
 			/* wall stick timer */
-			if (walled > 0 && walltimer > 0)walltimer--;
-			else walltimer = 10;
+			if (walled > 0 && walltimer > 0)walltimer -= 1 * time; //reduse timer when on wall
+			else walltimer = 10; //reset timer
 
 			/* dash marker positioning */
 			DashMarkerX = 50 * sin(angle) + x;
@@ -134,47 +139,49 @@ int main() {
 			if (dashing && candash && !grounded) {
 				candash = false;
 				if (dashing) {
-					sanicX = (x - DashMarkerX) / -3;
-					sanicY = (y - DashMarkerY) / -3;
-					dashtimer--;
+					sanicX = (x - DashMarkerX) / -3; //x velocity to move player in direction of dash marker 
+					sanicY = (y - DashMarkerY) / -3; //y velocity to move player in direction of dash marker 
+					dashtimer--; // reduse dash timer
 				}
 				if (dashtimer <= 0) {
-					dashing = false;
-					dashtimer = 2;
+					dashing = false; 
+					dashtimer = 2; //reset dash timer
 				}
 			}
 			else dashing = false;
 
 			/* slow time */
-			if (slowtime && candash)time = .1;
-			else time = 1;
+			if (slowtime && candash)time = .1; //slow time
+			else time = 1; //reset time
+
 			redraw = true;
 		}
 
-		/* starting movement when key is pressed */
+		/* when key is pressed */
 		if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (ev.keyboard.keycode) {
+			case ALLEGRO_KEY_SPACE:
 			case ALLEGRO_KEY_W:
 
 				/* wall jump */
-				if (walled > 0) {
-					if (walled == 1 && !grounded) {
-						sanicY = -8;
-						sanicX = -8;
-						x--;
+				if (walled > 0) { //if on a wall
+					if (walled == 1 && !grounded) { //if on right wall
+						sanicY = -8; //set player up velocitie
+						sanicX = -8; //set player left velocitie
+						x--; //move player 1 pixle to the left so they don't get stuck
 					}
-					else if (walled == 2 && !grounded) {
-						sanicY = -8;
-						sanicX = 8;
-						x++;
+					else if (walled == 2 && !grounded) { //if on left wall
+						sanicY = -8; //set player up velocitie
+						sanicX = 8; //set player right velocitie
+						x++; //move player 1 pixle to the right so they don't get stuck
 					}
 				}
 
 				/* jump */
-				if (canjump && grounded) {
-					if (walled == 1)x--;
-					else if (walled == 2)x++;
-					sanicY = -10;
+				if (canjump && grounded) { //if on ground
+					if (walled == 1)x--; //if against right wall move player 1 pixle to the right so they don't get stuck
+					else if (walled == 2)x++; //if against left wall move player 1 pixle to the right so they don't get stuck
+					sanicY = -10; //set player up velocitie
 					canjump = false;
 				}
 
@@ -186,10 +193,12 @@ int main() {
 				keys[KEY_RIGHT] = true;
 				break;
 			case ALLEGRO_KEY_RSHIFT:
-				if (candash) slowtime = true;
+				slowtime = true;
 				break;
 			case ALLEGRO_KEY_LSHIFT:
-				if (candash) dashing = true;
+				if (candash) {
+					dashing = true;
+				}
 				break;
 			case ALLEGRO_KEY_S:
 				if (walled == 1)x--;
@@ -197,7 +206,7 @@ int main() {
 			}
 		}
 
-		/* stoping movement when key is relessed */
+		/* when key is relessed */
 		else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
 			switch (ev.keyboard.keycode) {
 			case ALLEGRO_KEY_A:
@@ -207,7 +216,6 @@ int main() {
 				keys[KEY_RIGHT] = false;
 				break;
 			case ALLEGRO_KEY_RSHIFT:
-				if (candash) dashing = true;
 				slowtime = false;
 				break;
 			case ALLEGRO_KEY_ESCAPE:
@@ -224,31 +232,31 @@ int main() {
 			case NONE:
 				break;
 			case LEFT:
-				x = (*iter)->collision(x, y, LEFT);
-				if (sanicX > 0)sanicX = 0;
-				if (sanicY < 0)sanicY = 0;
-				dashing = false;
-				walled = 1;
+				x = (*iter)->collision(x, y, LEFT); //moves player out of plaform
+				if (sanicX > 0)sanicX = 0; //stops right velocitie
+				if (sanicY < 0)sanicY = 0; //stops up velocitie
+				dashing = false; //stops dashing
+				walled = 1; //sets walled so it can be used to tell what wall you're on
 				break;
 			case RIGHT:
-				x = (*iter)->collision(x, y, RIGHT);
-				if (sanicX < 0)sanicX = 0;
-				if (sanicY < 0)sanicY = 0;
-				dashing = false;
-				walled = 2;
+				x = (*iter)->collision(x, y, RIGHT); //moves player out of plaform
+				if (sanicX < 0)sanicX = 0; //stops left velocitie
+				if (sanicY < 0)sanicY = 0; //stops up velocitie
+				dashing = false; //stops dashing
+				walled = 2; //sets walled so it can be used to tell what wall player is on
 				break;
 			case TOP:
-				y = (*iter)->collision(x, y, TOP);
-				if (sanicY > 0)sanicY = 0;
-				dashing = false;
-				grounded = true;
-				candash = true;
-				canjump = true;
+				y = (*iter)->collision(x, y, TOP); //moves player out of plaform
+				if (sanicY > 0)sanicY = 0; //stops down velocitie
+				dashing = false; //stops dashing
+				grounded = true; //sets grounded to tell if player is on ground
+				candash = true; //refreshes dash
+				canjump = true; //refreshed jump
 				break;
 			case BOTTOM:
-				y = (*iter)->collision(x, y, BOTTOM);
-				if (sanicY < 0)sanicY = 0;
-				dashing = false;
+				y = (*iter)->collision(x, y, BOTTOM); //moves player out of plaform
+				if (sanicY < 0)sanicY = 0; //stops up velocitie
+				dashing = false; //stops dashing
 				break;
 			}
 		}
@@ -258,10 +266,11 @@ int main() {
 			redraw = false;
 			al_clear_to_color(al_map_rgb(0, 15, 0));
 			for (iter = ground.begin(); iter != ground.end(); iter++) {
-				(*iter)->draw();
+				(*iter)->draw(); //draw platform
 			}
-			if (slowtime)al_draw_circle(DashMarkerX, DashMarkerY, 5, al_map_rgb(255, 0, 0), 2);
-			al_draw_filled_rectangle(x + playerw, y + playerh, x - playerw, y - playerh, al_map_rgb(255, 0, 0));
+			if (slowtime)al_draw_circle(DashMarkerX, DashMarkerY, 5, al_map_rgb(255 * !candash, 0, 255 * candash), 2); //draw dash marker when changing dash angle
+			if (!slowtime)al_draw_filled_circle(DashMarkerX, DashMarkerY, 4, al_map_rgb(255 * !candash, 0, 255 * candash)); //draw dash maker when not changing dash angle
+			al_draw_filled_rectangle(x + playerw, y + playerh, x - playerw, y - playerh, al_map_rgb(255, 100, 0)); //draw player
 			al_flip_display();
 		}
 	}
