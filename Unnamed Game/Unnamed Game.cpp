@@ -13,7 +13,7 @@ int Grid[23][40]{
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
-	1,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
+	1,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,
 	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,1,
@@ -33,10 +33,12 @@ int main() {
 	al_init();
 	al_init_primitives_addon();
 	al_install_keyboard();
+	al_init_image_addon();
 	ALLEGRO_DISPLAY* display;
 	display = al_create_display(SCREEN_W, SCREEN_H);
 	ALLEGRO_EVENT_QUEUE* event_queue = al_create_event_queue();
 	ALLEGRO_TIMER* timer = al_create_timer(1.0 / FPS);
+	ALLEGRO_BITMAP* Instructions = al_load_bitmap("instructions.png");
 	al_start_timer(timer);
 	double x = 350; //player x position
 	double y = 600; //player y position
@@ -264,12 +266,13 @@ int main() {
 		/* draw section */
 		if (redraw && al_event_queue_is_empty(event_queue)) {
 			redraw = false;
-			al_clear_to_color(al_map_rgb(0, 15, 0));
+			al_clear_to_color(al_map_rgb(0, 30, 0));
+			al_draw_bitmap(Instructions, 33, 33, NULL);
 			for (iter = ground.begin(); iter != ground.end(); iter++) {
 				(*iter)->draw(); //draw platform
 			}
-			if (slowtime)al_draw_circle(DashMarkerX, DashMarkerY, 5, al_map_rgb(255 * !candash, 0, 255 * candash), 2); //draw dash marker when changing dash angle
-			if (!slowtime)al_draw_filled_circle(DashMarkerX, DashMarkerY, 4, al_map_rgb(255 * !candash, 0, 255 * candash)); //draw dash maker when not changing dash angle
+			if (slowtime)al_draw_triangle(DashMarkerX, DashMarkerY, 40 * sin(angle + .15) + x, 40 * cos(angle + .15) + y, 40 * sin(angle - .15) + x, 40 * cos(angle - .15) + y, al_map_rgb(255 * !candash, 0, 255 * candash), 2); //draw dash marker when changing dash angle
+			if (!slowtime)al_draw_filled_triangle(DashMarkerX, DashMarkerY, 40 * sin(angle + .15) + x, 40 * cos(angle + .15) + y, 40 * sin(angle - .15) + x, 40 * cos(angle - .15) + y, al_map_rgb(255 * !candash, 0, 255 * candash)); //draw dash marker when not changing dash angle
 			al_draw_filled_rectangle(x + playerw, y + playerh, x - playerw, y - playerh, al_map_rgb(255, 100, 0)); //draw player
 			al_flip_display();
 		}
